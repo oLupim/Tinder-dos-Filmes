@@ -40,7 +40,7 @@ export default function Lobby({ params }: { params: Promise<{ id: string }> }) {
   }
 
   function iniciarSessao() {
-    router.push(`/sala/${salaId}/votar`)
+    router.push(`/sala/${salaId}/party`)
   }
 
   return (
