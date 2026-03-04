@@ -1,12 +1,32 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { Copy, Check, Users, Crown } from 'lucide-react'
 import React from 'react'
+import { buscarSala } from '../../services/api'
 
-const SALA_MOCK = {
+// Tipos
+type Participante = {
+  id: string
+  nome: string
+  dono: boolean
+  online: boolean
+}
+
+type Sala = {
+  id: string
+  filtros: {
+    generos: string[]
+    streamings: string[]
+  }
+  participantes: Participante[]
+  status: string
+}
+
+// Mock usado enquanto backend não está pronto
+const SALA_MOCK: Sala = {
   id: 'XKTZ91',
   filtros: {
     generos: ['Action', 'Comedy'],
@@ -16,17 +36,36 @@ const SALA_MOCK = {
     { id: '1', nome: 'Jogador 1', dono: true,  online: true  },
     { id: '2', nome: 'Jogador 2', dono: false, online: true  },
     { id: '3', nome: 'Jogador 3', dono: false, online: false },
-  ]
+  ],
+  status: 'lobby'
 }
 
 export default function Lobby({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter()
   const { id } = React.use(params)
   const salaId = id.toUpperCase()
-  const link = `filmes.app/sala/${salaId}`
+  const link = `${window.location.origin}/sala/${salaId}`
 
+  const [sala, setSala] = useState<Sala | null>(null)
+  const [carregando, setCarregando] = useState(true)
   const [copiouCodigo, setCopiouCodigo] = useState(false)
   const [copiouLink, setCopiouLink] = useState(false)
+
+  // Busca dados da sala — usa mock se backend não responder
+  useEffect(() => {
+    async function carregar() {
+      try {
+        const dados = await buscarSala(salaId)
+        setSala(dados)
+      } catch {
+        console.warn('Backend indisponível, usando mock')
+        setSala({ ...SALA_MOCK, id: salaId })
+      } finally {
+        setCarregando(false)
+      }
+    }
+    carregar()
+  }, [salaId])
 
   function copiar(texto: string, tipo: 'codigo' | 'link') {
     navigator.clipboard.writeText(texto)
@@ -42,6 +81,23 @@ export default function Lobby({ params }: { params: Promise<{ id: string }> }) {
   function iniciarSessao() {
     router.push(`/sala/${salaId}/party`)
   }
+
+  // Tela de carregando
+  if (carregando) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 16 }}>
+        <div style={{
+          width: 40, height: 40, borderRadius: '50%',
+          border: '3px solid #2D2D44', borderTop: '3px solid #A855F7',
+          animation: 'spin 0.8s linear infinite'
+        }} />
+        <p style={{ color: '#9CA3AF', fontSize: 14 }}>Carregando sala...</p>
+        <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+      </div>
+    )
+  }
+
+  if (!sala) return null
 
   return (
     <div style={{ padding: '40px 20px', display: 'flex', flexDirection: 'column', gap: 24, minHeight: '100vh' }}>
@@ -98,7 +154,7 @@ export default function Lobby({ params }: { params: Promise<{ id: string }> }) {
           Filtros
         </p>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-          {[...SALA_MOCK.filtros.generos, ...SALA_MOCK.filtros.streamings].map(tag => (
+          {[...sala.filtros.generos, ...sala.filtros.streamings].map(tag => (
             <span key={tag} style={{
               padding: '4px 12px', borderRadius: 999, fontSize: 11, fontWeight: 500,
               background: '#7C3AED22', border: '1px solid #7C3AED44', color: '#A855F7'
@@ -116,12 +172,12 @@ export default function Lobby({ params }: { params: Promise<{ id: string }> }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
           <Users size={14} color="#9CA3AF" />
           <p style={{ fontSize: 11, fontWeight: 600, color: '#9CA3AF', letterSpacing: '0.1em', textTransform: 'uppercase', margin: 0 }}>
-            Participantes ({SALA_MOCK.participantes.length})
+            Participantes ({sala.participantes.length})
           </p>
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          {SALA_MOCK.participantes.map((p, i) => (
+          {sala.participantes.map((p, i) => (
             <motion.div key={p.id}
               initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3 + i * 0.1 }}
