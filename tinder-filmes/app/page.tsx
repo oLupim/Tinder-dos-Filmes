@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Tv2, Play, Hash } from 'lucide-react'
+import { criarSala as criarSalaAPI } from './services/api'
 
 const STREAMINGS = [
   { id: 'netflix',    nome: 'NETFLIX'    },
@@ -36,11 +37,16 @@ export default function Home() {
   const [generos, setGeneros] = useState<string[]>([])
   const [erro, setErro] = useState('')
 
-  function criarSala() {
+  async function criarSala() {
     if (streamings.length === 0) return setErro('Selecione pelo menos um streaming')
     if (generos.length === 0) return setErro('Selecione pelo menos um gênero')
     setErro('')
-    router.push('/sala/teste123')
+    try {
+      const { salaId } = await criarSalaAPI(generos, streamings)
+      router.push(`/sala/${salaId}`)
+    } catch (err) {
+      setErro('Erro ao criar sala. Tente novamente.')
+    }
   }
 
   function entrarSala() {
