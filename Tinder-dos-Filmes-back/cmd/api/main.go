@@ -10,6 +10,21 @@ import (
 	"strings"
 )
 
+func corsMiddleware(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		next(w, r)
+	}
+}
+
 func main() {
 	cfg := config.LoadConfig()
 
@@ -33,17 +48,15 @@ func main() {
 		TMDBService: tmdbService,
 	}
 
-	http.HandleFunc("/discover", movieHandler.Discover)
-	http.HandleFunc("/sala", salaHandler.CriarSala)
-	
-	http.HandleFunc("/sala/", func(w http.ResponseWriter, r *http.Request) {
-	if strings.HasSuffix(r.URL.Path, "/filmes") {
-		salaHandler.BuscarFilmesDaSala(w, r)
-	} else {
-		salaHandler.BuscarSala(w, r)
-	}
-})
-	
+	http.HandleFunc("/discover", corsMiddleware(movieHandler.Discover))
+	http.HandleFunc("/sala", corsMiddleware(salaHandler.CriarSala))
+	http.HandleFunc("/sala/", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if strings.HasSuffix(r.URL.Path, "/filmes") {
+			salaHandler.BuscarFilmesDaSala(w, r)
+		} else {
+			salaHandler.BuscarSala(w, r)
+		}
+	}))
 
 	log.Println("🚀 Servidor rodando na porta 8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))

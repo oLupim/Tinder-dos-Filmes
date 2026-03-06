@@ -1,4 +1,3 @@
-// URL do backend Go — muda para a URL real quando estiver no ar
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'
 
 // ── CRIAR SALA ──
@@ -17,18 +16,17 @@ export async function criarSala(generos: number[], streamings: number[]) {
 
 // ── BUSCAR DADOS DA SALA ──
 export async function buscarSala(salaId: string) {
-  const res = await fetch(`${API_URL}/api/sala/${salaId}`)
+  const res = await fetch(`${API_URL}/sala/${salaId}`)
 
   if (!res.ok) throw new Error('Sala não encontrada')
 
   const data = await res.json()
-  // Espera receber: { id, filtros, participantes, status }
   return data
 }
 
 // ── ENTRAR NA SALA ──
 export async function entrarSala(salaId: string) {
-  const res = await fetch(`${API_URL}/api/sala/${salaId}/entrar`, {
+  const res = await fetch(`${API_URL}/sala/${salaId}/entrar`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
   })
@@ -36,13 +34,12 @@ export async function entrarSala(salaId: string) {
   if (!res.ok) throw new Error('Erro ao entrar na sala')
 
   const data = await res.json()
-  // Espera receber: { userId, token }
   return data as { userId: string, token: string }
 }
 
 // ── BUSCAR FILMES ──
 export async function buscarFilmes(genero: string, streaming: string) {
-  const res = await fetch(`http://localhost:8080/discover?genero=${genero}&streaming=${streaming}`)
+  const res = await fetch(`${API_URL}/discover?genero=${genero}&streaming=${streaming}`)
 
   if (!res.ok) throw new Error('Erro ao buscar filmes')
 

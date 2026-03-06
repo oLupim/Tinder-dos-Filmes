@@ -49,7 +49,7 @@ export default function Home() {
   setErro('')
   try {
     const { salaId } = await criarSalaAPI(generos, streamings)
-    router.push(`/sala/${salaId}`)
+    router.push(`/sala/${salaId}/party`)
   } catch (err) {
     setErro('Erro ao criar sala. Tente novamente.')
   }
