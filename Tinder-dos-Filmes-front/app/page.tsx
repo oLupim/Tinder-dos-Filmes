@@ -44,19 +44,16 @@ export default function Home() {
   const [erro, setErro] = useState('')
 
   async function criarSala(generos: number[], streamings: number[]) {
-    if (streamings.length === 0) return setErro('Selecione pelo menos um streaming')
-    if (generos.length === 0) return setErro('Selecione pelo menos um gênero')
-    setErro('')
-    try {
-      const { salaId } = await criarSalaAPI(
-        generos.map(String),
-        streamings.map(String)
-      )
-      router.push(`/sala/${salaId}`)
-    } catch (err) {
-      setErro('Erro ao criar sala. Tente novamente.')
-    }
+  if (streamings.length === 0) return setErro('Selecione pelo menos um streaming')
+  if (generos.length === 0) return setErro('Selecione pelo menos um gênero')
+  setErro('')
+  try {
+    const { salaId } = await criarSalaAPI(generos, streamings)
+    router.push(`/sala/${salaId}`)
+  } catch (err) {
+    setErro('Erro ao criar sala. Tente novamente.')
   }
+}
 
   function entrarSala() {
     if (!codigo.trim()) return setErro('Digite o código da sala')

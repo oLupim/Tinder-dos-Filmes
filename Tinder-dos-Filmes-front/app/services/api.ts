@@ -2,8 +2,8 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'
 
 // ── CRIAR SALA ──
-export async function criarSala(generos: string[], streamings: string[]) {
-  const res = await fetch(`${API_URL}/api/sala`, {
+export async function criarSala(generos: number[], streamings: number[]) {
+  const res = await fetch(`${API_URL}/sala`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ generos, streamings })
@@ -12,7 +12,6 @@ export async function criarSala(generos: string[], streamings: string[]) {
   if (!res.ok) throw new Error('Erro ao criar sala')
 
   const data = await res.json()
-  // Espera receber: { salaId: "XKTZ91" }
   return data as { salaId: string }
 }
 
@@ -44,6 +43,16 @@ export async function entrarSala(salaId: string) {
 // ── BUSCAR FILMES ──
 export async function buscarFilmes(genero: string, streaming: string) {
   const res = await fetch(`http://localhost:8080/discover?genero=${genero}&streaming=${streaming}`)
+
+  if (!res.ok) throw new Error('Erro ao buscar filmes')
+
+  const data = await res.json()
+  return data
+}
+
+// ── BUSCAR FILMES DA SALA ──
+export async function buscarFilmesDaSala(salaId: string) {
+  const res = await fetch(`${API_URL}/sala/${salaId}/filmes`)
 
   if (!res.ok) throw new Error('Erro ao buscar filmes')
 

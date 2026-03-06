@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion'
 import { Heart, X, Star, Users, ChevronDown, ChevronUp } from 'lucide-react'
-import { buscarFilmes } from '../../../services/api'
+import { buscarFilmes, buscarFilmesDaSala } from '../../../services/api'
 
 // Tipo baseado no JSON que o backend retorna
 type Filme = {
@@ -73,19 +73,19 @@ export default function Party({ params }: { params: Promise<{ id: string }> }) {
   const dislikeOpacity = useTransform(x, [-100, -20], [1, 0])
 
   useEffect(() => {
-    async function carregar() {
-      try {
-        const dados = await buscarFilmes('28', '8')
-        setFilmes(dados)
-      } catch {
-        console.warn('Backend indisponível, usando mock')
-        setFilmes(FILMES_MOCK)
-      } finally {
-        setCarregando(false)
-      }
+  async function carregar() {
+    try {
+      const dados = await buscarFilmesDaSala(id)
+      setFilmes(dados)
+    } catch {
+      console.warn('Backend indisponível, usando mock')
+      setFilmes(FILMES_MOCK)
+    } finally {
+      setCarregando(false)
     }
-    carregar()
-  }, [])
+  }
+  carregar()
+}, [id])
 
   const filme = filmes[index]
 
@@ -140,6 +140,10 @@ export default function Party({ params }: { params: Promise<{ id: string }> }) {
     </div>
   )
 
+
+
+
+  //ESTILIZAÇÃO 
   return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'relative' }}>
 
