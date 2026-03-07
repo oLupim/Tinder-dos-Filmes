@@ -8,9 +8,9 @@ import { buscarFilmes, buscarFilmesDaSala } from '../../../services/api'
 
 // Tipo baseado no JSON que o backend retorna
 type Filme = {
-  ID: number
-  Title: string
-  Overview: string
+  id: number
+  title: string
+  overview: string
   poster_path: string
   vote_average: number
   release_date: string
@@ -20,9 +20,9 @@ type Filme = {
 
 const FILMES_MOCK: Filme[] = [
   {
-    ID: 1,
-    Title: 'Inception',
-    Overview: 'Um ladrão especializado em roubar segredos do subconsciente durante o sono recebe a missão inversa: plantar uma ideia na mente de um executivo.',
+    id: 1,
+    title: 'Inception',
+    overview: 'Um ladrão especializado em roubar segredos do subconsciente durante o sono recebe a missão inversa: plantar uma ideia na mente de um executivo.',
     poster_path: 'https://image.tmdb.org/t/p/w500/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg',
     vote_average: 8.8,
     release_date: "2010",
@@ -30,9 +30,9 @@ const FILMES_MOCK: Filme[] = [
     streaming: 'Netflix'
   },
   {
-    ID: 2,
-    Title: 'The Dark Knight',
-    Overview: 'Batman enfrenta o Coringa, um criminoso que semeia o caos em Gotham City e o força a questionar tudo em que acredita.',
+    id: 2,
+    title: 'The Dark Knight',
+    overview: 'Batman enfrenta o Coringa, um criminoso que semeia o caos em Gotham City e o força a questionar tudo em que acredita.',
     poster_path: 'https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg',
     vote_average: 9.0,
     release_date: "2008",
@@ -40,9 +40,9 @@ const FILMES_MOCK: Filme[] = [
     streaming: 'Max'
   },
   {
-    ID: 3,
-    Title: 'Interstellar',
-    Overview: 'Um grupo de astronautas viaja através de um buraco de minhoca em busca de um novo lar para a humanidade.',
+    id: 3,
+    title: 'Interstellar',
+    overview: 'Um grupo de astronautas viaja através de um buraco de minhoca em busca de um novo lar para a humanidade.',
     poster_path: 'https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg',
     vote_average: 8.6,
     release_date: "2014",
@@ -91,7 +91,7 @@ export default function Party({ params }: { params: Promise<{ id: string }> }) {
 
   function votar(voto: 'like' | 'dislike') {
     if (!filme) return
-    setVotados(prev => [...prev, { id: filme.ID, voto }])
+    setVotados(prev => [...prev, { id: filme.id, voto }])
 
     if (voto === 'like' && index === 1) {
       setTimeout(() => setMatch(filme), 300)
@@ -170,7 +170,7 @@ export default function Party({ params }: { params: Promise<{ id: string }> }) {
       <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 20px', position: 'relative' }}>
         <AnimatePresence mode="wait">
           <motion.div
-            key={filme.ID}
+            key={filme.id}
             style={{
               x, rotate,
               width: '100%', maxWidth: 340,
@@ -192,7 +192,7 @@ export default function Party({ params }: { params: Promise<{ id: string }> }) {
             <div style={{ position: 'relative', height: 380 }}>
               <img
                 src={getPoster(filme)}
-                alt={filme.Title}
+                alt={filme.title}
                 style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', pointerEvents: 'none' }}
               />
 
@@ -216,7 +216,7 @@ export default function Party({ params }: { params: Promise<{ id: string }> }) {
               <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '16px' }}>
                 <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
                   <div style={{ flex: 1, marginRight: 8 }}>
-                    <h2 style={{ fontSize: 20, fontWeight: 800, margin: 0, color: '#fff', lineHeight: 1.2 }}>{filme.Title}</h2>
+                    <h2 style={{ fontSize: 20, fontWeight: 800, margin: 0, color: '#fff', lineHeight: 1.2 }}>{filme.title}</h2>
                     {filme.release_date && <p style={{ fontSize: 13, color: '#9CA3AF', margin: '2px 0 0' }}>{filme.release_date}</p>}
                   </div>
                   {filme.vote_average && (
@@ -264,7 +264,7 @@ export default function Party({ params }: { params: Promise<{ id: string }> }) {
                     initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }}
                     style={{ fontSize: 12, color: '#9CA3AF', lineHeight: 1.6, margin: '8px 0 0', overflow: 'hidden' }}>
-                    {filme.Overview}
+                    {filme.overview}
                   </motion.p>
                 )}
               </AnimatePresence>
@@ -310,7 +310,7 @@ export default function Party({ params }: { params: Promise<{ id: string }> }) {
                 width: '100%', maxWidth: 340, border: '1px solid #7C3AED'
               }}>
               <div style={{ position: 'relative', height: 280 }}>
-                <img src={getPoster(match)} alt={match.Title}
+                <img src={getPoster(match)} alt={match.title}
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, #1E1E2E 10%, transparent 60%)' }} />
                 <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.3 }}
@@ -322,7 +322,7 @@ export default function Party({ params }: { params: Promise<{ id: string }> }) {
               </div>
 
               <div style={{ padding: '16px 20px 24px' }}>
-                <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 4px', color: '#fff' }}>{match.Title}</h2>
+                <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 4px', color: '#fff' }}>{match.title}</h2>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
                   {match.release_date && <span style={{ fontSize: 12, color: '#9CA3AF' }}>{match.release_date}</span>}
                   {match.vote_average && <>
@@ -339,7 +339,7 @@ export default function Party({ params }: { params: Promise<{ id: string }> }) {
                     </span>
                   </>}
                 </div>
-                <p style={{ fontSize: 12, color: '#9CA3AF', lineHeight: 1.6, margin: '0 0 20px' }}>{match.Overview}</p>
+                <p style={{ fontSize: 12, color: '#9CA3AF', lineHeight: 1.6, margin: '0 0 20px' }}>{match.overview}</p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                   <button onClick={() => { setMatch(null); setIndex(index + 1) }} style={{
                     width: '100%', padding: '14px', borderRadius: 14, border: '1px solid #2D2D44',
