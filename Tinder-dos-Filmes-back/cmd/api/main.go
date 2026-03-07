@@ -5,6 +5,7 @@ import (
 	"TinderDosFilmes/internal/database"
 	"TinderDosFilmes/internal/handlers"
 	"TinderDosFilmes/internal/services"
+	"TinderDosFilmes/internal/socket"
 	"log"
 	"net/http"
 	"strings"
@@ -48,6 +49,8 @@ func main() {
 		TMDBService: tmdbService,
 	}
 
+	hub := socket.NewHub()
+
 	http.HandleFunc("/discover", corsMiddleware(movieHandler.Discover))
 	http.HandleFunc("/sala", corsMiddleware(salaHandler.CriarSala))
 	http.HandleFunc("/sala/", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
@@ -57,6 +60,7 @@ func main() {
 			salaHandler.BuscarSala(w, r)
 		}
 	}))
+	http.HandleFunc("/ws/", socket.ServeWS(hub))
 
 	log.Println("🚀 Servidor rodando na porta 8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))

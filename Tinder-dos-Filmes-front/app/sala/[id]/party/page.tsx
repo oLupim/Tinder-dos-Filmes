@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion'
 import { Heart, X, Star, Users, ChevronDown, ChevronUp } from 'lucide-react'
-import { buscarFilmes, buscarFilmesDaSala } from '../../../services/api'
+import { buscarFilmes, buscarFilmesDaSala, buscarSala } from '../../../services/api'
 
 // Tipo baseado no JSON que o backend retorna
 type Filme = {
@@ -51,7 +51,6 @@ const FILMES_MOCK: Filme[] = [
   },
 ]
 
-const TOTAL_JOGADORES = 3
 const POSTER_BASE = 'https://image.tmdb.org/t/p/w500'
 const POSTER_PLACEHOLDER = 'https://via.placeholder.com/500x750/1E1E2E/A855F7?text=Sem+Poster'
 
@@ -65,6 +64,7 @@ export default function Party({ params }: { params: Promise<{ id: string }> }) {
   const [sinopseAberta, setSinopseAberta] = useState(false)
   const [match, setMatch] = useState<Filme | null>(null)
   const [jogadoresVotaram, setJogadoresVotaram] = useState(1)
+  const [totalJogadores, setTotalJogadores] = useState(0)
   const [carregando, setCarregando] = useState(true)
 
   const x = useMotionValue(0)
@@ -75,8 +75,12 @@ export default function Party({ params }: { params: Promise<{ id: string }> }) {
   useEffect(() => {
   async function carregar() {
     try {
-      const dados = await buscarFilmesDaSala(id)
-      setFilmes(dados)
+      const [filmesDados, salaDados] = await Promise.all([
+        buscarFilmesDaSala(id),
+        buscarSala(id)
+      ])
+      setFilmes(filmesDados)
+      setTotalJogadores(salaDados.totalJogadores || salaDados.jogadores?.length || 0)
     } catch {
       console.warn('Backend indisponível, usando mock')
       setFilmes(FILMES_MOCK)
@@ -102,7 +106,7 @@ export default function Party({ params }: { params: Promise<{ id: string }> }) {
       setSinopseAberta(false)
       if (index + 1 < filmes.length) {
         setIndex(index + 1)
-        setJogadoresVotaram(Math.floor(Math.random() * TOTAL_JOGADORES) + 1)
+        setJogadoresVotaram(Math.floor(Math.random() * totalJogadores) + 1)
       }
       x.set(0)
     }, 300)
@@ -161,7 +165,7 @@ export default function Party({ params }: { params: Promise<{ id: string }> }) {
           background: '#1E1E2E', borderRadius: 20, padding: '6px 12px', border: '1px solid #2D2D44' }}>
           <Users size={13} color="#A855F7" />
           <span style={{ fontSize: 12, color: '#A855F7', fontWeight: 600 }}>
-            {jogadoresVotaram}/{TOTAL_JOGADORES}
+            {jogadoresVotaram}/{totalJogadores}
           </span>
         </div>
       </div>
