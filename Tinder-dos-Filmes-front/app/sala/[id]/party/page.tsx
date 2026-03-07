@@ -11,9 +11,9 @@ type Filme = {
   ID: number
   Title: string
   Overview: string
-  poster?: string
-  nota?: number
-  ano?: number
+  poster_path: string
+  vote_average: number
+  release_date: string
   generos?: string[]
   streaming?: string
 }
@@ -23,9 +23,9 @@ const FILMES_MOCK: Filme[] = [
     ID: 1,
     Title: 'Inception',
     Overview: 'Um ladrão especializado em roubar segredos do subconsciente durante o sono recebe a missão inversa: plantar uma ideia na mente de um executivo.',
-    poster: 'https://image.tmdb.org/t/p/w500/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg',
-    nota: 8.8,
-    ano: 2010,
+    poster_path: 'https://image.tmdb.org/t/p/w500/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg',
+    vote_average: 8.8,
+    release_date: "2010",
     generos: ['Sci-Fi', 'Action'],
     streaming: 'Netflix'
   },
@@ -33,9 +33,9 @@ const FILMES_MOCK: Filme[] = [
     ID: 2,
     Title: 'The Dark Knight',
     Overview: 'Batman enfrenta o Coringa, um criminoso que semeia o caos em Gotham City e o força a questionar tudo em que acredita.',
-    poster: 'https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg',
-    nota: 9.0,
-    ano: 2008,
+    poster_path: 'https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg',
+    vote_average: 9.0,
+    release_date: "2008",
     generos: ['Action', 'Drama'],
     streaming: 'Max'
   },
@@ -43,9 +43,9 @@ const FILMES_MOCK: Filme[] = [
     ID: 3,
     Title: 'Interstellar',
     Overview: 'Um grupo de astronautas viaja através de um buraco de minhoca em busca de um novo lar para a humanidade.',
-    poster: 'https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg',
-    nota: 8.6,
-    ano: 2014,
+    poster_path: 'https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg',
+    vote_average: 8.6,
+    release_date: "2014",
     generos: ['Sci-Fi', 'Drama'],
     streaming: 'Prime'
   },
@@ -115,9 +115,9 @@ export default function Party({ params }: { params: Promise<{ id: string }> }) {
   }
 
   function getPoster(filme: Filme) {
-    if (!filme.poster) return POSTER_PLACEHOLDER
-    if (filme.poster.startsWith('http')) return filme.poster
-    return `${POSTER_BASE}${filme.poster}`
+    if (!filme.poster_path) return POSTER_PLACEHOLDER
+    if (filme.poster_path.startsWith('http')) return filme.poster_path
+    return `${POSTER_BASE}${filme.poster_path}`
   }
 
   if (carregando) {
@@ -217,13 +217,13 @@ export default function Party({ params }: { params: Promise<{ id: string }> }) {
                 <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
                   <div style={{ flex: 1, marginRight: 8 }}>
                     <h2 style={{ fontSize: 20, fontWeight: 800, margin: 0, color: '#fff', lineHeight: 1.2 }}>{filme.Title}</h2>
-                    {filme.ano && <p style={{ fontSize: 13, color: '#9CA3AF', margin: '2px 0 0' }}>{filme.ano}</p>}
+                    {filme.release_date && <p style={{ fontSize: 13, color: '#9CA3AF', margin: '2px 0 0' }}>{filme.release_date}</p>}
                   </div>
-                  {filme.nota && (
+                  {filme.vote_average && (
                     <div style={{ display: 'flex', alignItems: 'center', gap: 4,
                       background: '#7C3AED', borderRadius: 20, padding: '4px 10px', flexShrink: 0 }}>
                       <Star size={12} color="#FCD34D" fill="#FCD34D" />
-                      <span style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>{filme.nota}</span>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>{filme.vote_average}</span>
                     </div>
                   )}
                 </div>
@@ -324,12 +324,12 @@ export default function Party({ params }: { params: Promise<{ id: string }> }) {
               <div style={{ padding: '16px 20px 24px' }}>
                 <h2 style={{ fontSize: 22, fontWeight: 800, margin: '0 0 4px', color: '#fff' }}>{match.Title}</h2>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-                  {match.ano && <span style={{ fontSize: 12, color: '#9CA3AF' }}>{match.ano}</span>}
-                  {match.nota && <>
+                  {match.release_date && <span style={{ fontSize: 12, color: '#9CA3AF' }}>{match.release_date}</span>}
+                  {match.vote_average && <>
                     <span style={{ fontSize: 12, color: '#9CA3AF' }}>•</span>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                       <Star size={12} color="#FCD34D" fill="#FCD34D" />
-                      <span style={{ fontSize: 12, color: '#FCD34D', fontWeight: 700 }}>{match.nota}</span>
+                      <span style={{ fontSize: 12, color: '#FCD34D', fontWeight: 700 }}>{match.vote_average}</span>
                     </div>
                   </>}
                   {match.streaming && <>
